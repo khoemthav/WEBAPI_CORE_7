@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Wordprocessing;
 using LearnAPI.Helper;
 using LearnAPI.Modal;
 using LearnAPI.Repos;
@@ -12,11 +13,14 @@ namespace LearnAPI.Container
     {
         private readonly LearndataContext context;
         private readonly IMapper mapper;
-        public UserService(LearndataContext learndata, IMapper mapper) {
+        private readonly IEmailService emailService;
+        public UserService(LearndataContext learndata, IMapper mapper, IEmailService emailService)
+        {
             this.context = learndata;
             this.mapper = mapper;
+            this.emailService = emailService;
         }
-       public async Task<APIResponse> ConfirmRegister(int userid, string username, string otptext)
+        public async Task<APIResponse> ConfirmRegister(int userid, string username, string otptext)
         {
             APIResponse response = new APIResponse();
             bool otpresponse= await ValidateOTP(username,otptext);
@@ -237,7 +241,23 @@ namespace LearnAPI.Container
 
         private async Task SendOtpMail(string useremail,string OtpText,string Name)
         {
+            var mailrequest = new Mailrequest();
+            mailrequest.Email = useremail;
+            mailrequest.Subject = "Thanks for registering : OTP";
+            mailrequest.Emailbody = GenerateEmailBody(Name, OtpText);
+            await this.emailService.SendEmail(mailrequest);
 
+        }
+
+        private string GenerateEmailBody(string name,string otptext)
+        {
+            string emailbody = "<div style='width:100%;background-color:grey'>";
+            emailbody += "<h1>Hi " + name + ", Thanks for registering</h1>";
+            emailbody += "<h2>Please enter OTP text and complete the registeration</h2>";
+            emailbody += "<h2>OTP Text is :" + otptext + "</h2>";
+            emailbody += "</div>";
+
+            return emailbody;
         }
 
         private async Task<bool> Validatepwdhistory(string Username, string password)
