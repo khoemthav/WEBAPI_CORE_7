@@ -32,4 +32,5 @@ public partial class TblCustomer
     public bool? IsActive { get; set; }
 
     public int? Taxcode { get; set; }
+    public string ID { get; internal set; }
 }

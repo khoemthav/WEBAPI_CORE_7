@@ -16,8 +16,7 @@ public partial class LearndataContext : DbContext
         : base(options)
     {
     }
-
-    public virtual DbSet<TblCustomer> TblCustomers { get; set; }
+    public DbSet<TblCustomer> TblCustomers { get; set; }
 
     public virtual DbSet<TblMenu> TblMenus { get; set; }
 
@@ -43,9 +42,9 @@ public partial class LearndataContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<TblTempuser>(entity =>
+        modelBuilder.Entity<TblTempuser>(static entity =>
         {
-            entity.HasKey(e => e.Id).HasName("tbl_tempuser1");
+            entity.HasKey(static e => e.Id).HasName("tbl_tempuser1");
         });
 
         OnModelCreatingPartial(modelBuilder);
